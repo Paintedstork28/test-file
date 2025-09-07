@@ -424,6 +424,9 @@
             }
         }
     </style>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/script.js"></script>
 </head>
 <body>
     <header>
@@ -433,7 +436,7 @@
                 <span>Fitness Tracker</span>
             </div>
             <ul class="nav-links">
-                <li><a href="index.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="index-fallback.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                 <li><a href="exercises.html"><i class="fas fa-running"></i> Exercises</a></li>
                 <li><a href="nutrition.html"><i class="fas fa-apple-alt"></i> Nutrition</a></li>
                 <li><a href="sleep.html"><i class="fas fa-bed"></i> Sleep</a></li>
@@ -520,24 +523,24 @@
 
         <section class="content-section">
             <h2><i class="fas fa-trophy"></i> Today's Achievements</h2>
-            <div class="achievements-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
-                <div class="achievement-card" style="background: var(--light-color); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid var(--success-color);">
-                    <h4 style="color: var(--success-color); margin-bottom: 0.5rem;">
+            <div class="achievements-grid">
+                <div class="achievement-card">
+                    <h4 style="color: var(--success); margin-bottom: 0.5rem;">
                         <i class="fas fa-medal"></i> Calorie Goal
                     </h4>
-                    <p style="color: var(--text-secondary); font-size: 0.9rem;">You're 84% to your daily calorie goal!</p>
+                    <p>You're 84% to your daily calorie goal!</p>
                 </div>
-                <div class="achievement-card" style="background: var(--light-color); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid var(--warning-color);">
-                    <h4 style="color: var(--warning-color); margin-bottom: 0.5rem;">
+                <div class="achievement-card" style="border-left-color: var(--warning);">
+                    <h4 style="color: var(--warning); margin-bottom: 0.5rem;">
                         <i class="fas fa-dumbbell"></i> Exercise Reminder
                     </h4>
-                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Complete 2 more exercises to reach your daily goal.</p>
+                    <p>Complete 2 more exercises to reach your daily goal.</p>
                 </div>
-                <div class="achievement-card" style="background: var(--light-color); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid var(--primary-color);">
-                    <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">
+                <div class="achievement-card" style="border-left-color: var(--primary);">
+                    <h4 style="color: var(--primary); margin-bottom: 0.5rem;">
                         <i class="fas fa-moon"></i> Sleep Quality
                     </h4>
-                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Great sleep last night! Keep it up.</p>
+                    <p>Great sleep last night! Keep it up.</p>
                 </div>
             </div>
         </section>
@@ -564,87 +567,5 @@
     <footer>
         <p>&copy; 2024 Fitness Tracker. All rights reserved. | Stay healthy and motivated!</p>
     </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-config.js"></script>
-    <script src="js/script.js"></script>
-    
-    <!-- Authentication Check -->
-    <script>
-        // Wait for Supabase to be available
-        async function waitForSupabase() {
-            let attempts = 0;
-            const maxAttempts = 50; // 5 seconds
-            
-            while (attempts < maxAttempts) {
-                if (window.SupabaseAuth && window.getSupabaseClient) {
-                    console.log('SupabaseAuth is available');
-                    return true;
-                }
-                await new Promise(resolve => setTimeout(resolve, 100));
-                attempts++;
-            }
-            
-            console.error('SupabaseAuth not available after 5 seconds');
-            return false;
-        }
-        
-        // Check authentication on page load
-        document.addEventListener('DOMContentLoaded', async function() {
-            try {
-                console.log('DOM loaded, waiting for Supabase...');
-                
-                const supabaseReady = await waitForSupabase();
-                if (!supabaseReady) {
-                    console.error('Supabase not ready, redirecting to login');
-                    window.location.href = 'login.html';
-                    return;
-                }
-                
-                console.log('Supabase ready, checking authentication...');
-                const user = await SupabaseAuth.getCurrentUser();
-                if (!user) {
-                    console.log('No user found, redirecting to login');
-                    window.location.href = 'login.html';
-                    return;
-                }
-                console.log('User authenticated:', user);
-                // Update user display if needed
-                updateUserDisplay(user);
-            } catch (error) {
-                console.error('Auth check failed:', error);
-                window.location.href = 'login.html';
-            }
-        });
-        
-        // Function to update user display
-        function updateUserDisplay(user) {
-            // Add user info to navigation if needed
-            const nav = document.querySelector('.nav-links');
-            if (nav && user) {
-                const userMenu = document.createElement('li');
-                userMenu.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; color: var(--text-secondary);">
-                        <i class="fas fa-user-circle"></i>
-                        <span>${user.email || 'User'}</span>
-                        <button onclick="logout()" style="background: none; border: none; color: var(--danger); cursor: pointer; padding: 0.25rem;">
-                            <i class="fas fa-sign-out-alt"></i>
-                        </button>
-                    </div>
-                `;
-                nav.appendChild(userMenu);
-            }
-        }
-        
-        // Logout function
-        async function logout() {
-            try {
-                await SupabaseAuth.signOut();
-                window.location.href = 'login.html';
-            } catch (error) {
-                console.error('Logout failed:', error);
-            }
-        }
-    </script>
 </body>
 </html>
